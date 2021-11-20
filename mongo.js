@@ -4,7 +4,7 @@ const fakeUser = require("./createUser");
 const emailHelper = require("./helpers/email.helper");
 
 const MONGO_URI = process.env.MONGO_URI
-// const MONGO_URI = `mongodb+srv://localhost:21707`;
+// const MONGO_URI = `mongodb://localhost:27017/test`;
 
 mongoose.Promise = global.Promise;
 
@@ -19,7 +19,7 @@ mongoose.connect(
     if (!err) {
       console.log("MongoDB Atlas Connection Succeeded.");
       // fakeUser();
-      // fakeProduct();
+      // fakeProduct();  
       // fakeProduct(); comment out to no longer run
       // emailHelper.createTemplatesIfNotExists();
       // emailHelper.createResetPasswordTemplate();

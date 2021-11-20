@@ -24,7 +24,7 @@ router.post("/:productId", authenticationMiddleware, createCart);
  * Description: add product to cart
  * Access : authenticated user
  */
-router.put("/add-product-cart", authenticationMiddleware, addProductToCart);
+router.put("/add-product-cart",authenticationMiddleware, addProductToCart);
 
 /**
  * Description: Update product
@@ -46,7 +46,7 @@ router.delete("/:cartId", authenticationMiddleware, deleteCart);
  * Description: get single cart
  * Access : admin
  */
-router.get("/single-cart", authenticationMiddleware, isAdmin, getSingleCart);
+router.get("/single-cart", authenticationMiddleware, getSingleCart);
 
 /**
  * Description: Get all carts

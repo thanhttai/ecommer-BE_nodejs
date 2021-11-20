@@ -69,8 +69,7 @@ cartController.addProductToCart = async (req, res, next) => {
 
   try {
     const cartToUpdate = await Cart.findOne({ owner, status: "active" });
-
-    body.map((product) => {
+    cartToUpdate.products.map((product) => {
       const qty = parseInt(product.qty); //check
       const productId = product.productId; //check
       //check if valid in here
@@ -139,10 +138,10 @@ cartController.getSingleCart = async (req, res, next) => {
   const owner = req.currentUser._id;
 
   try {
-    console.log(owner, cartId);
-    result = await Cart.findOne({ owner, _id: cartId }).populate(
+    result = await Cart.findOne({ owner }).populate(
       "products.productId"
-    );
+      );
+      console.log(result,'huhuuhuhhuu');
   } catch (error) {
     return next(error);
   }

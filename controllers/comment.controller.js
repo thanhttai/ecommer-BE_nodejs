@@ -23,6 +23,7 @@ commentController.createComment = async (req, res, next) => {
                 owner: author,
                 status: "paid",
                 "products.productId": productId,
+                
             }
         );
         if (!found) throw new Error("Please pay before comment");
