@@ -93,12 +93,12 @@ cartController.addProductToCart = async (req, res, next) => {
 
 cartController.removeProductFromCart = async (req, res, next) => {
   let result;
-  const { cartId } = req.params;
+  // const { cartId } = req.params;
   let { productId, qty } = req.body;
   // productId = new mongoose.Types.ObjectId(productId);
-
+  const owner = req.currentUser._id;
   try {
-    const cartFound = await Cart.findById(cartId);
+    const cartFound = await Cart.findOne({owner});
     // const newProductsList = cartFound.products
     //   .map((existed) => {
     //     const newProduct = {
