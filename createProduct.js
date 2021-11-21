@@ -1,9 +1,10 @@
 const faker = require("faker");
 const Product = require("./models/Product");
-const numberOfProduct = 100;
+const numberOfProduct = 300;
 
 const createProduct = async () => {
   console.log("Creating some products");
+  const deletePrevLog = await Product.collection.drop();
   for (let index = 0; index < numberOfProduct; index++) {
     const singleProduct = {
       name: faker.commerce.productName(),
@@ -11,7 +12,7 @@ const createProduct = async () => {
       category: faker.commerce.department(),
       stock: Math.ceil(Math.random() * 100),
       description: faker.commerce.productDescription(),
-      photo: faker.image.business(),
+      photo: faker.image.food(),
     };
 
     const found = await Product.findOne({ name: singleProduct.name });

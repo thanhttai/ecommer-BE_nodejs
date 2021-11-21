@@ -1,6 +1,6 @@
 const faker = require('faker');
 const User = require("./models/User")
-const numberOfUser = 100;
+const numberOfUser = 50;
 const bcrypt = require('bcrypt');
 const SALT_ROUND = parseInt(process.env.SALT_ROUND);
 const fs = require('fs');
@@ -21,7 +21,7 @@ const createUser = async (req, res, next) => {
                 name: faker.name.firstName(),
                 email: faker.internet.email(),
                 password: "haha",
-                currentBalance: faker.finance.amount(),
+                currentBalance: faker.datatype.number({ min: 10, max: 10000 }),
                 avatar: faker.random.arrayElement(images),
                 // avatar: faker.image.people()
             };
