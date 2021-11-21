@@ -5,6 +5,7 @@ const User = require("../models/User");
 const { uploader } = require("../helpers/cloudinaryConfig");
 const { send, createSingleEmailFromTemplate } = require("../helpers/email.helper");
 const generateHex = require("../helpers/generateHex");
+const { default: Token } = require("../models/Token");
 
 const userController = {};
 const SALT_ROUND = parseInt(process.env.SALT_ROUND);
@@ -87,11 +88,45 @@ userController.loginWithEmailPassword = async (req, res, next) => {
   return sendResponse(res, 200, true, result, false, "Successfully login user");
 };
 
+// userController.updateById = async (req, res, next) => {
+//   let result;
+//   const allowOptions = ["name", "email"];
+//   const updateObject = {};
+//   const imagePath = req.file.path;
+//   try {
+//     allowOptions.forEach((option) => {
+//       if (req.body[option] !== undefined) {
+//         updateObject[option] = req.body[option];
+//       }
+//     });
+
+//     //
+//     if (imagePath) {
+//       const cloudinaryResponse = await uploader.upload(imagePath);
+//       updateObject.avatar = cloudinaryResponse.secure_url;
+//     }
+
+//     result = await User.findByIdAndUpdate(req.currentUser._id, updateObject, {
+//       new: true,
+//     });
+//   } catch (error) {
+//     return next(error);
+//   }
+//   return sendResponse(
+//     res,
+//     200,
+//     true,
+//     result,
+//     false,
+//     "Successfully update user"
+//   );
+// };
 userController.updateById = async (req, res, next) => {
   let result;
-  const allowOptions = ["name", "email"];
+  const allowOptions = ["name", "email", "avatar"];
   const updateObject = {};
-  const imagePath = req.file.path;
+  // const imagePath = req.file.path;
+  // console.log(imagePath, "path");
   try {
     allowOptions.forEach((option) => {
       if (req.body[option] !== undefined) {
@@ -99,11 +134,10 @@ userController.updateById = async (req, res, next) => {
       }
     });
 
-    //
-    if (imagePath) {
-      const cloudinaryResponse = await uploader.upload(imagePath);
-      updateObject.avatar = cloudinaryResponse.secure_url;
-    }
+    // if (imagePath) {
+    //   const cloudinaryResponse = await uploader.upload(imagePath);
+    //   updateObject.avatar = cloudinaryResponse.secure_url;
+    // }
 
     result = await User.findByIdAndUpdate(req.currentUser._id, updateObject, {
       new: true,
@@ -120,7 +154,6 @@ userController.updateById = async (req, res, next) => {
     "Successfully update user"
   );
 };
-
 userController.resetPassword = async (req, res, next) => {
   let result;
   const { email, name } = req.body;
@@ -252,6 +285,37 @@ userController.verifyEmail = async (req, res, next) => {
     "Successfully verify email"
   )
 }
+
+
+userController.getCurrentUser = async (req, res, next) => {
+  let result;
+  try {
+    result = await User.findById(req.currentUser._id);
+  } catch (error) {
+    return next(error);
+  }
+  return sendResponse(
+    res,
+    200,
+    true,
+    result,
+    false,
+    "Successfully get current user"
+  );
+};
+
+userController.logout = async (req, res, next) => {
+  const token = req.body.token;
+  if (!token)
+    return res.status(400).send("Unable to log out. Please try again later.");
+  try {
+    const newToken = await Token.create({ token });
+    await newToken.clearExpiredTokens();
+    return res.status(200).send("Log out successfully.");
+  } catch (err) {
+    next(err);
+  }
+};
 
 
 module.exports = userController;

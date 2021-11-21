@@ -69,7 +69,8 @@ cartController.addProductToCart = async (req, res, next) => {
 
   try {
     const cartToUpdate = await Cart.findOne({ owner, status: "active" });
-    cartToUpdate.products.map((product) => {
+    
+    body.map((product) => {
       const qty = parseInt(product.qty); //check
       const productId = product.productId; //check
       //check if valid in here
@@ -93,43 +94,50 @@ cartController.addProductToCart = async (req, res, next) => {
 
 cartController.removeProductFromCart = async (req, res, next) => {
   let result;
-  // const { cartId } = req.params;
-  let { productId, qty } = req.body;
-  // productId = new mongoose.Types.ObjectId(productId);
-  const owner = req.currentUser._id;
-  try {
-    const cartFound = await Cart.findOne({owner});
-    // const newProductsList = cartFound.products
-    //   .map((existed) => {
-    //     const newProduct = {
-    //       productId: existed.productId,
-    //       qty: existed.productId.equals(productId)
-    //         ? existed.qty - qty
-    //         : existed.qty,
-    //     };
-    //     return newProduct;
-    //   })
-    //   .filter((e) => e.qty > 0);
+  let {cartId,productId, qty} = req.params
+  console.log(cartId, 'cardId');
+  console.log(productId, qty, 'productid qty ');
 
-    const newProductsList = cartFound.products.filter((existed) => {
-      if (existed.productId.equals(productId)) {
-        existed.qty -= qty;
-      }
-      return existed.qty > 0;
-    });
-    cartFound.products = newProductsList;
-    result = await Cart.findByIdAndUpdate(cartId, cartFound, { new: true });
-  } catch (error) {
-    return next(error);
-  }
-  return sendResponse(
-    res,
-    200,
-    true,
-    result,
-    false,
-    "Successfully create shopping cart"
-  );
+  // try {
+  //  if(productId && qty && cartId) {
+  //   qty = parseInt(qty);
+  //   const cartFound = await Cart.findById(cartId);
+  //   console.log(cartFound, 'hahaahahah')
+  //   // const newProductsList = cartFound.products
+  //   //   .map((existed) => {
+  //   //     const newProduct = {
+  //   //       productId: existed.productId,
+  //   //       qty: existed.productId.equals(productId)
+  //   //         ? existed.qty - qty
+  //   //         : existed.qty,
+  //   //     };
+  //   //     return newProduct;
+  //   //   })
+  //   //   .filter((e) => e.qty > 0);
+    
+
+  //   const newProductsList = cartFound.products.filter((existed) => {
+  //     if (existed.productId.equals(productId)) {
+  //       existed.qty -= qty;
+  //     }
+  //     return existed.qty > 0;
+  //   });
+  //   cartFound.products = newProductsList;
+  //   result = await Cart.findByIdAndUpdate(cartId, cartFound, { new: true });
+  //  }
+    
+  // } catch (error) {
+  //   return next(error);
+  // }
+  // return sendResponse(
+  //   res,
+  //   200,
+  //   true,
+  //   result,
+  //   false,
+  //   "Successfully remove product from cart"
+  // );
+  
 };
 
 cartController.getSingleCart = async (req, res, next) => {
@@ -141,7 +149,7 @@ cartController.getSingleCart = async (req, res, next) => {
     result = await Cart.findOne({ owner }).populate(
       "products.productId"
       );
-      console.log(result,'huhuuhuhhuu');
+     
   } catch (error) {
     return next(error);
   }
@@ -196,7 +204,7 @@ cartController.getAllOwn = async (req, res, next) => {
     "Successfully get all cart"
   );
 };
-cartController.payCart = async (req, res, next) => {
+cartController. payCart = async (req, res, next) => {
   let result = {};
   const { cartId } = req.params;
 
@@ -272,13 +280,7 @@ cartController.deleteCart = async (req, res, next) => {
   const { cartId } = req.params;
   const owner = req.currentUser._id;
   try {
-    result = await Cart.findOneAndUpdate(
-      { _id: cartId, owner },
-      { isDeleted: true },
-      {
-        new: true,
-      }
-    );
+    result = await Cart.findByIdAndDelete(cartId);
   } catch (error) {
     return next(error);
   }

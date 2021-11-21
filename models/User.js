@@ -10,9 +10,9 @@ const userSchema = Schema(
     isDeleted: { type: Boolean, default: false },
     role: { type: String, enum: ["admin", "guest"], default: "guest" },
     currentBalance: { type: Number, default: 0 },
-    avatar: String,
     emailVerificationCode: String,
     isEmailVerified: { type: Boolean, default: false },
+    avatar: { type: String, default: "https://s199.imacdn.com/ta/2016/10/28/256321b11748bca2_8551d96990e1683b_27534214776658784154671.jpg"}
   },
   {
     timestamps: true,

@@ -13,6 +13,8 @@ const {
   createWithFacebook,
   verifyEmail,
   resetPassword,
+  getCurrentUser,
+  logout
 } = require("../controllers/user.controller");
 const imageUploadMiddleware = require("../middlewares/imageUpload.middleware");
 
@@ -21,6 +23,9 @@ const imageUploadMiddleware = require("../middlewares/imageUpload.middleware");
  * Access : admin role required
  */
 router.get("/", getAll);
+
+
+router.get("/me", authenticationMiddleware, getCurrentUser);
 /**
  * Description:  destroy the world
  * Access : public
@@ -38,13 +43,16 @@ router.post("/login", loginWithEmailPassword);
  * Access : authenticated user
  */
 router.put(
-  "/update-me",
+  "/me",
   authenticationMiddleware,
-  imageUploadMiddleware.single("image"),
+  // imageUploadMiddleware.single("image"),
   updateById
 );
 
 router.put("/reset-password", resetPassword);
+
+
+router.post("/logout", logout);
 
 router.get("/emailverification/:code", verifyEmail);
 /**

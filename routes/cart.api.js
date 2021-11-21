@@ -31,7 +31,7 @@ router.put("/add-product-cart",authenticationMiddleware, addProductToCart);
  * Access : admin role required
  */
 router.delete(
-  "/remove-product-cart/:cartId",
+  "/remove-product-cart/:cartId/:productId/:qty",
   authenticationMiddleware,
   removeProductFromCart
 );
