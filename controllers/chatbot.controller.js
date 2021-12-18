@@ -34,6 +34,7 @@ chatbotController.handleAction = async (responses) => {
 
 
 chatbotController.textQuery = async (text, parameters = {}) => {
+  try {
     console.log(text, 'text')
     let self = module.exports;
     const sessionPath = sessionClient.sessionPath(projectId, sessionId );
@@ -57,12 +58,16 @@ chatbotController.textQuery = async (text, parameters = {}) => {
     console.log(responses,'response')
     responses = await self.handleAction(responses);
     return responses;
+  } catch (error) {
+      console.log(error)
+  }
 
 
 };
 
 chatbotController.eventQuery = async (event, parameters = {}) => {
-    let self = module.exports;
+    try {
+        let self = module.exports;
     let sessionPath = sessionClient.sessionPath(projectId, sessionId);
 
     const request = {
@@ -79,6 +84,9 @@ chatbotController.eventQuery = async (event, parameters = {}) => {
     let responses = await sessionClient.detectIntent(request);
     responses = self.handleAction(responses);
     return responses;
+    } catch (error) {
+        console.log(error)
+    }
 
 }
 
