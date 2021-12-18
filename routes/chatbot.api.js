@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.post("/df_text_query",async(req, res) => {
     
-    try {
+    
        
         console.log('hâha')
         let responses = await textQuery(req.body.text, req.body.userID, req.body.parameters);
@@ -22,9 +22,7 @@ router.post("/df_text_query",async(req, res) => {
         res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE")
       
         res.send(responses[0].queryResult)
-    } catch (error) {
-        console.log(error)
-    }
+   
 } );
 router.post('/api/df_event_query',async(req, res) => {
     try {
