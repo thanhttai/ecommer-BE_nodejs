@@ -13,6 +13,7 @@ const cartSchema = Schema(
           ref: "Product",
         },
         qty: { type: Number, required: true },
+        color: { type: String, required: false}
       },
     ],
     isDeleted: { type: Boolean, default: false },

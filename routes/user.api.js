@@ -22,7 +22,7 @@ const imageUploadMiddleware = require("../middlewares/imageUpload.middleware");
  * Description:  get all edas
  * Access : admin role required
  */
-router.get("/", getAll);
+router.get("/",isAdmin, getAll);
 
 
 router.get("/me", authenticationMiddleware, getCurrentUser);
@@ -61,29 +61,29 @@ router.get("/emailverification/:code", verifyEmail);
  */
 router.delete("/delete-me", authenticationMiddleware, deleteById);
 
-router.get(
-  "/loginwithgoogle",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-router.get(
-  "/login/googleok",
-  passport.authenticate("google", { failureRedirect: "/notFound" }),
-  createWithGoogle
-);
+// router.get(
+//   "/loginwithgoogle",
+//   passport.authenticate("google", { scope: ["profile", "email"] })
+// );
+// router.get(
+//   "/login/googleok",
+//   passport.authenticate("google", { failureRedirect: "/notFound" }),
+//   createWithGoogle
+// );
 
-router.get(
-  "/loginwithfacebook",
-  passport.authenticate("facebook", { scope: ["email"] })
-);
+// router.get(
+//   "/loginwithfacebook",
+//   passport.authenticate("facebook", { scope: ["email"] })
+// );
 
-router.get(
-  "/login/facebookok",
-  passport.authenticate("facebook", {
-    // failureMessage: "Cannot login to facebook",
-    failureRedirect: "/notFound",
-    // successRedirect: "/success",
-  }),
-  createWithFacebook
-);
+// router.get(
+//   "/login/facebookok",
+//   passport.authenticate("facebook", {
+//     // failureMessage: "Cannot login to facebook",
+//     failureRedirect: "/notFound",
+//     // successRedirect: "/success",
+//   }),
+//   createWithFacebook
+// );
 
 module.exports = router;

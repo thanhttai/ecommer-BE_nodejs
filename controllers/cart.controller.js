@@ -3,18 +3,24 @@ const Cart = require("../models/Cart");
 const Product = require("../models/Product");
 const sendResponse = require("../helpers/sendResponse");
 const User = require("../models/User");
+const Order = require("../models/Order");
 const cartController = {};
 
 cartController.createCart = async (req, res, next) => {
   //create a cart with the first product
+ 
   let test;
   let result;
   try {
     //get inputs
     const owner = req.currentUser._id;
     const { productId } = req.params;
-    let { qty } = req.body;
+    let { qty,color } = req.body[0];
+    // console.log(qty,color, 'haha')
     qty = parseInt(qty);
+    const body = req.body;
+    // console.log(body, 'huhu')
+
     //check if input is enough
     if (!productId || typeof qty !== "number") {
       throw new Error("Missing info");
@@ -24,15 +30,64 @@ cartController.createCart = async (req, res, next) => {
       throw new Error("qty invalid");
     }
     //check if user already have a cart active
-    const activeCart = await Cart.findOne({ owner, status: "active" });
-    if (activeCart) throw new Error("already have active cart");
+    const activeCart = await Cart.findOne({owner, status: "active" });
+    // console.log(activeCart, 'activeCart')  
+    if (activeCart) {
+   
+        // if(product.productId) throw new Error("missing productId")
+        // const qty = parseInt(product.qty); //check
+        // const productId = product.productId; //check
+        //check if valid in here
+        activeCart.products.forEach((product,index) => {
+          // console.log('-------')
+          // console.log(body[0].productId === product.productId._id.toString(),'------')
+          if(product.productId._id.toString() === body[0].productId){
+            // console.log('success',  product.qty + body[0].qty)
+            // console.log('success',  product)
+            let amount = product.qty + body[0].qty
+            // const index = activeCart.products.indexOf(product);
+            // if (index > -1) {
+            //   activeCart.products.splice(index, 1);
+            //   console.log('sendResponse', activeCart.products)
+
+            //   }
+            activeCart.products =  activeCart.products.filter(item=>{
+              // console.log( item, ,'success')
+              return item.productId._id.toString() !== body[0].productId
+            })
+            // console.log(activeCart.products, 'success')
+            activeCart.products.push({productId, qty: amount, color})
+          }else{
+            activeCart.products.push({ productId, qty,color });
+          }
+       
+        })
+        // activeCart.products.push({ productId, qty });
+      
+     
+      // console.log(activeCart,'tai oiiii')
+      result = await Cart.findByIdAndUpdate(activeCart._id, activeCart, {
+        new: true,
+      });
+      // console.log(result, 'neeeeee')
+      return sendResponse(
+        res,
+        200,
+        true,
+        { result, test },
+        false,
+        "Successfully update cart"
+      );
+     
+    }
     //check if product id is true
     const found = await Product.findById(productId);
     if (!found) {
       throw new Error("product not found");
     }
     //create product choice object
-    const productChoice = { productId, qty };
+    const productChoice = { productId, qty, color }; 
+     
     //create new cart object to be add to db
     const newCart = {
       owner,
@@ -40,11 +95,13 @@ cartController.createCart = async (req, res, next) => {
     };
     //create new cart in model
     result = await Cart.create(newCart);
+
+    
     //get info from owner-User ref  and products.productId-Product ref
-    result = await result.populate([
-      { path: "owner", select: ["name", "email"] },
-      { path: "products.productId", select: "name" },
-    ]);
+    // result = await result.populate([
+    //   { path: "owner", select: ["name", "email"] },
+    //   { path: "products.productId", select: ["name", "colors"] },
+    // ]);
   } catch (error) {
     return next(error);
   }
@@ -69,13 +126,14 @@ cartController.addProductToCart = async (req, res, next) => {
 
   try {
     const cartToUpdate = await Cart.findOne({ owner, status: "active" });
-    
+    if(body[0].qty < 1) throw new Error("missing input qty");
     body.map((product) => {
       const qty = parseInt(product.qty); //check
       const productId = product.productId; //check
       //check if valid in here
       cartToUpdate.products.push({ productId, qty });
     });
+    console.log(cartToUpdate)
     result = await Cart.findByIdAndUpdate(cartToUpdate._id, cartToUpdate, {
       new: true,
     });
@@ -144,12 +202,13 @@ cartController.getSingleCart = async (req, res, next) => {
   let result;
   const { cartId } = req.query;
   const owner = req.currentUser._id;
-
+  
   try {
-    result = await Cart.findOne({ owner }).populate(
+    result = await Cart.findOne({ owner, status:'active' }).populate(
       "products.productId"
       );
-     
+      
+      console.log(result, 'owner')
   } catch (error) {
     return next(error);
   }
@@ -206,13 +265,15 @@ cartController.getAllOwn = async (req, res, next) => {
 };
 cartController. payCart = async (req, res, next) => {
   let result = {};
+  let order;
   const { cartId } = req.params;
-
+  const {city, country, address, postalCode,phoneNumber,paymentMethod , totalPrice} = req.body;
   const { currentBalance, _id } = req.currentUser;
-
+  
   try {
+    console.log(cartId);
     let found = await Cart.findById(cartId).populate("products.productId");
-
+    console.log(found);
     const productsToUpdate = await Promise.all(
       found.products.map(async (request) => {
         const existed = await Product.findById(request.productId._id);
@@ -262,6 +323,33 @@ cartController. payCart = async (req, res, next) => {
         });
       })
     );
+
+    //create product choice object
+    let productChoice = await Cart.findById(cartId).populate([
+      "owner",
+      "products.productId",
+    ]);
+
+    let ownerChoice = await User.findById(_id)
+    // const productChoice = { productId, qty, color }; 
+     
+    //create new cart object to be add to db
+    const newCart = {
+      cart: productChoice,
+      owner: ownerChoice,
+      address,
+      city,
+      country,
+      phoneNumber,
+      postalCode,
+      paymentMethod,
+      totalPrice
+    };
+    //create new cart in model
+     order = await Order.create(newCart);
+
+
+
   } catch (error) {
     return next(error);
   }
@@ -269,9 +357,9 @@ cartController. payCart = async (req, res, next) => {
     res,
     200,
     true,
-    result,
+    [result, order],
     false,
-    "Successfully  pay for cart shopping cart"
+    "Successfully  pay for cart shopping cart and order"
   );
 };
 

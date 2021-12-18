@@ -5,7 +5,7 @@ const User = require("../models/User");
 const { uploader } = require("../helpers/cloudinaryConfig");
 const { send, createSingleEmailFromTemplate } = require("../helpers/email.helper");
 const generateHex = require("../helpers/generateHex");
-const { default: Token } = require("../models/Token");
+const Token = require("../models/Token");
 
 const userController = {};
 const SALT_ROUND = parseInt(process.env.SALT_ROUND);
@@ -38,6 +38,7 @@ userController.createByEmailPassword = async (req, res, next) => {
   const { name, email } = req.body;
   let { password } = req.body;
   let result;
+  console.log(name, email, password);
   try {
     if (!name || !email || !password) throw new Error("missing input");
     const found = await User.findOne({ email });
@@ -69,6 +70,50 @@ userController.createByEmailPassword = async (req, res, next) => {
     "Successfully create user and sent verification code"
   );
 };
+// userController.createByEmailPassword = (async (req, res, next) => {
+//   let {name, email, password } = req.body;
+//   let user = await User.findOne({ email });
+
+//   if (user)
+//     return next(new AppError(409, "User already exists", "Register Error"));
+
+//   const salt = await bcrypt.genSalt(10);
+//   password = await bcrypt.hash(password, salt);
+//   user = await User.create({
+//     name,
+//     email,
+//     password,
+//   });
+//   const accessToken = await user.generateToken();
+//   return sendResponse(
+//     res,
+//     200,
+//     true,
+//     { user, accessToken },
+//     null,
+//     "Create user successful"
+//   );
+// })
+
+// userController.loginWithEmailPassword = catchAsync(async (req, res, next) => {
+//     const {name, email, password } = req.body;
+//     const user = await User.findOne({ email });
+//     if (!user)
+//       return next(new AppError(400, "Invalid credentials", "Login Error"));
+  
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) throw new Error("Wrong password Login Error")
+  
+//     accessToken = await user.generateToken();
+//     return sendResponse(
+//       res,
+//       200,
+//       true,
+//       { user, accessToken },
+//       null,
+//       "Login successful"
+//     );
+//   });
 userController.loginWithEmailPassword = async (req, res, next) => {
   const { email, password } = req.body;
   let result;
@@ -200,71 +245,71 @@ userController.deleteById = async (req, res, next) => {
   return sendResponse(res, 200, true, null, false, "Successfully delete user");
 };
 
-userController.createWithGoogle = async (req, res, next) => {
-  console.log("input", req.user);
-  const userInfo = req.user;
-  let result;
-  //allow user to create account
-  //from userInfo input , create a account in my database
-  try {
-    const found = await User.findOne({ email: userInfo.emails[0].value });
-    if (found) throw new Error("User already registered");
-    const salt = await bcrypt.genSalt(SALT_ROUND);
-    let password = await bcrypt.hash("abc", salt);
+// userController.createWithGoogle = async (req, res, next) => {
+//   console.log("input", req.user);
+//   const userInfo = req.user;
+//   let result;
+//   //allow user to create account
+//   //from userInfo input , create a account in my database
+//   try {
+//     const found = await User.findOne({ email: userInfo.emails[0].value });
+//     if (found) throw new Error("User already registered");
+//     const salt = await bcrypt.genSalt(SALT_ROUND);
+//     let password = await bcrypt.hash("abc", salt);
 
-    const newUser = {
-      name: userInfo.displayName,
-      avatar: userInfo.photos[0].value,
-      email: userInfo.emails[0].value,
-      password,
-    };
+//     const newUser = {
+//       name: userInfo.displayName,
+//       avatar: userInfo.photos[0].value,
+//       email: userInfo.emails[0].value,
+//       password,
+//     };
 
-    result = await User.create(newUser);
-  } catch (error) {
-    return next(error);
-  }
-  return sendResponse(
-    res,
-    200,
-    true,
-    result,
-    false,
-    "Successfully creeate account with google"
-  );
-};
+//     result = await User.create(newUser);
+//   } catch (error) {
+//     return next(error);
+//   }
+//   return sendResponse(
+//     res,
+//     200,
+//     true,
+//     result,
+//     false,
+//     "Successfully creeate account with google"
+//   );
+// };
 
-userController.createWithFacebook = async (req, res, next) => {
-  console.log("input", req.user);
-  const userInfo = req.user;
-  let result;
-  //allow user to create account
-  //from userInfo input , create a account in my database
-  try {
-    const found = await User.findOne({ email: userInfo.emails[0].value });
-    if (found) throw new Error("User already registered");
-    const salt = await bcrypt.genSalt(SALT_ROUND);
-    let password = await bcrypt.hash("abc", salt);
+// userController.createWithFacebook = async (req, res, next) => {
+//   console.log("input", req.user);
+//   const userInfo = req.user;
+//   let result;
+//   //allow user to create account
+//   //from userInfo input , create a account in my database
+//   try {
+//     const found = await User.findOne({ email: userInfo.emails[0].value });
+//     if (found) throw new Error("User already registered");
+//     const salt = await bcrypt.genSalt(SALT_ROUND);
+//     let password = await bcrypt.hash("abc", salt);
 
-    const defaultUser = {
-      name: userInfo.displayName,
-      email: userInfo.emails[0].value,
-      facebookId: userInfo.id,
-      password,
-    };
+//     const defaultUser = {
+//       name: userInfo.displayName,
+//       email: userInfo.emails[0].value,
+//       facebookId: userInfo.id,
+//       password,
+//     };
 
-    result = await User.create(defaultUser);
-  } catch (error) {
-    return next(error);
-  }
-  return sendResponse(
-    res,
-    200,
-    true,
-    result,
-    false,
-    "Successfully creeate account with facebook"
-  );
-};
+//     result = await User.create(defaultUser);
+//   } catch (error) {
+//     return next(error);
+//   }
+//   return sendResponse(
+//     res,
+//     200,
+//     true,
+//     result,
+//     false,
+//     "Successfully creeate account with facebook"
+//   );
+// };
 
 userController.verifyEmail = async (req, res, next) => {
   let result;
@@ -289,8 +334,10 @@ userController.verifyEmail = async (req, res, next) => {
 
 userController.getCurrentUser = async (req, res, next) => {
   let result;
+
   try {
     result = await User.findById(req.currentUser._id);
+    
   } catch (error) {
     return next(error);
   }
@@ -306,11 +353,12 @@ userController.getCurrentUser = async (req, res, next) => {
 
 userController.logout = async (req, res, next) => {
   const token = req.body.token;
+  console.log(token, 'token ne')
   if (!token)
     return res.status(400).send("Unable to log out. Please try again later.");
   try {
     const newToken = await Token.create({ token });
-    await newToken.clearExpiredTokens();
+    await newToken.clearExpiredTokens();  
     return res.status(200).send("Log out successfully.");
   } catch (err) {
     next(err);

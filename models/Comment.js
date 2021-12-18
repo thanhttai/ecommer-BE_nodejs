@@ -7,6 +7,7 @@ const commentSchema = Schema(
         content: { type: String, required: true },
         targetProduct: { type: Schema.Types.ObjectId, ref: "Product", required: true },
         isDeleted:{ type: Boolean, default: false},
+        // stars: { type: String, enum: [1, 2, 3, 4, 5], default:5 , required:false},
     }, {
     timestamps: true
 }

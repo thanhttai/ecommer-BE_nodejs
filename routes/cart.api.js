@@ -18,7 +18,7 @@ const router = express.Router();
  * Description: create cart
  * Access : authenticated user
  */
-router.post("/:productId", authenticationMiddleware, createCart);
+router.post("/:productId",authenticationMiddleware, createCart);
 
 /**
  * Description: add product to cart
@@ -46,7 +46,7 @@ router.delete("/:cartId", authenticationMiddleware, deleteCart);
  * Description: get single cart
  * Access : admin
  */
-router.get("/single-cart", authenticationMiddleware, getSingleCart);
+router.get("/single-cart",authenticationMiddleware, getSingleCart);
 
 /**
  * Description: Get all carts

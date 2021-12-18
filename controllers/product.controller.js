@@ -52,7 +52,7 @@ productController.getAllProduct = async (req, res, next) => {
   let count = 0;
   let result;
   try {
-    result = await Product.find({ ...filter, isDeleted: false })
+    result = await Product.find({ isDeleted: false })
       .sort({ createdAt: -1 })
       .limit(limit)
       .skip(limit * (page - 1));
@@ -61,6 +61,7 @@ productController.getAllProduct = async (req, res, next) => {
   } catch (error) {
     return next(error);
   }
+  // return result;
   return sendResponse(
     res,
     200,

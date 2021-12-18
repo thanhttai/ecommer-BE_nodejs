@@ -4,6 +4,8 @@ const router = express.Router();
 router.get("/", (req, res) => {
   res.send("haha");
 });
+// var authRouter = require("./auth.api");
+// router.use('/auth', authRouter)
 
 const userRoutes = require("./user.api");
 router.use("/users", userRoutes);
@@ -19,5 +21,16 @@ router.use("/comments", commentRoutes);
 
 const emailRoutes = require("./email.api");
 router.use("/emails", emailRoutes);
+
+
+const stripeRoutes = require("./stripe");
+router.use("/checkout", stripeRoutes);
+
+const orderRoutes = require("./order.api");
+router.use("/orders", orderRoutes);
+
+const chatbotRoutes = require("./chatbot.api");
+router.use("/", chatbotRoutes);
+
 
 module.exports = router;
