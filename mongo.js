@@ -3,8 +3,8 @@ const fakeProduct = require("./createProduct");
 const fakeUser = require("./createUser");
 const emailHelper = require("./helpers/email.helper");
 
-// const MONGO_URI = process.env.MONGO_URI
-const MONGO_URI = `mongodb://localhost:27017/test`;
+const MONGO_URI = process.env.MONGO_URI
+// const MONGO_URI = `mongodb://localhost:27017/test`;
 
 mongoose.Promise = global.Promise;
 
