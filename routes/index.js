@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.send("haha");
-});
+const chatbotRoutes = require("./chatbot.api");
+router.use("/", chatbotRoutes);
+
+
 // var authRouter = require("./auth.api");
 // router.use('/auth', authRouter)
 
@@ -29,8 +30,6 @@ router.use("/checkout", stripeRoutes);
 const orderRoutes = require("./order.api");
 router.use("/orders", orderRoutes);
 
-const chatbotRoutes = require("./chatbot.api");
-router.use("/", chatbotRoutes);
 
 
 module.exports = router;
