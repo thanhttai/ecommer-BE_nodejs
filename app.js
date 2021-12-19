@@ -19,6 +19,7 @@ app.use(cors({
   method:["GET", "POST", "PUT", "PATCH" ,"DELETE"], 
   credentials: true
 }));
+
 app.use(
   session({
     secret: "secret",
