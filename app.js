@@ -15,7 +15,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors({
-  origin:"https://tai-thanh-ngo.netlify.app"
+  origin:"*",
+  method:["GET", "POST", "PUT", "PATCH" ,"DELETE"], 
+  credentials: true
 }));
 app.use(
   session({
