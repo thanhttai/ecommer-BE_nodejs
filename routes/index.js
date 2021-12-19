@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const chatbotRoutes = require("./chatbot.api");
-router.use("/", chatbotRoutes);
+router.use("/chats", chatbotRoutes);
 
 
 // var authRouter = require("./auth.api");
